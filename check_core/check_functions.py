@@ -1,4 +1,9 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
+# ================================
+# @Time    : 2019/10/26 23:00
+# @Author  : KaiJun Fan
+# @Email   : qq826530928@163.com
+# ================================
 """
 maya check functions:
     find_triangle_edge: 检查三边面
