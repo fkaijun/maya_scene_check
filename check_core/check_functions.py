@@ -16,6 +16,7 @@ maya check functions:
     find_crease_edges: 检查折痕边
     find_zero_length_edges: 检查不足长度的边
     find_unfrozen_vertices: 检查点的世界坐标是否为0.0进而判断点未进行冻结变换
+    has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
 """
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
@@ -259,6 +260,64 @@ def find_unfrozen_vertices(mesh_name):
             if not (abs(xyz[0]) <= 0.0 and abs(xyz[1]) <= 0.0 and abs(xyz[2]) <= 0.0):
                 vertice_indices.append(i)
     return vertice_indices
+
+
+def has_vertex_pnts_attr(mesh_name, fix):
+    """
+    check vertex pnts attr value and reset value
+    :param str mesh_name: object long name eg.'|group3|pSphere1'
+    :param fix: Whether to reset 
+    :return: bool
+    :rtype: bool
+    """
+    mesh_list = om.MSelectionList()
+    mesh_list.add(mesh_name)
+    dag_path = mesh_list.getDagPath(0)
+
+    dag_path.extendToShape()
+    dag_node = om.MFnDagNode(dag_path)
+    pnts_array = dag_node.findPlug("pnts", True)
+    data_handle = pnts_array.asMdata_handle()
+
+    arraydata_handle = om.MArraydata_handle(data_handle)
+
+    if not fix:
+        while True:
+            output_handle = arraydata_handle.outputValue()
+            xyz = output_handle.asFloat3()
+            if xyz:
+                if xyz[0] != 0.0:
+                    pnts_array.destructHandle(data_handle)
+                    return True
+                if xyz[1] != 0.0:
+                    pnts_array.destructHandle(data_handle)
+                    return True
+                if xyz[2] != 0.0:
+                    pnts_array.destructHandle(data_handle)
+                    return True
+            status = arraydata_handle.next()
+            if not status:
+                break
+    else:
+        pntx = dag_node.attribute("pntx")
+        pnty = dag_node.attribute("pnty")
+        pntz = dag_node.attribute("pntz")
+        while True:
+            output_handle = arraydata_handle.outputValue()
+
+            xHandle = output_handle.child(pntx)
+            yHandle = output_handle.child(pnty)
+            zHandle = output_handle.child(pntz)
+            xHandle.setFloat(0.0)
+            yHandle.setFloat(0.0)
+            zHandle.setFloat(0.0)
+
+            status = arraydata_handle.next()
+            if not status:
+                break
+        pnts_array.setMdata_handle(data_handle)
+    pnts_array.destructHandle(data_handle)
+    return False
 
 
 if __name__ == '__main__':
