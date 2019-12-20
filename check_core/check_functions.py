@@ -17,6 +17,7 @@ maya check functions:
     find_zero_length_edges: 检查不足长度的边
     find_unfrozen_vertices: 检查点的世界坐标是否为0.0进而判断点未进行冻结变换
     has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
+    uv_face_cross_quadrant: 检查跨越uv象限的面
 """
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
@@ -318,6 +319,51 @@ def has_vertex_pnts_attr(mesh_name, fix):
         pnts_array.setMdata_handle(data_handle)
     pnts_array.destructHandle(data_handle)
     return False
+
+
+def uv_face_cross_quadrant(mesh_name):
+    """
+    Check uv face cross quadrant
+    :param str mesh_name: object long name eg.'|group3|pSphere1'
+    :return: face index
+    :rtype: list
+    """
+    mesh_list = om.MSelectionList()
+    mesh_list.add(mesh_name)
+    dag_path = mesh_list.getDagPath(0)
+    uv_face_list = []
+
+    face_it = om.MItMeshPolygon(dag_path)
+
+    while not face_it.isDone():
+        u_quadrant = None
+        v_quadrant = None
+        uvs = face_it.getUVs()
+
+        for index, uv_coordinates in enumerate(uvs):
+            # u
+            if index == 0:
+                for u_coordinate in uv_coordinates:
+                    if u_quadrant is None:
+                        u_quadrant = int(u_coordinate)
+                    if u_quadrant != int(u_coordinate):
+                        component_name = '{0}.f[{1}]'.format(mesh_name, face_it.index())
+                        if component_name not in uv_face_list:
+                            uv_face_list.append(component_name)
+                        print index, uv_coordinates
+            # v
+            if index == 1:
+                for v_coordinate in uv_coordinates:
+                    if v_quadrant is None:
+                        v_quadrant = int(v_coordinate)
+                    if v_quadrant != int(v_coordinate):
+                        component_name = '{0}.f[{1}]'.format(mesh_name, face_it.index())
+                        if component_name not in uv_face_list:
+                            uv_face_list.append(component_name)
+                        print index, uv_coordinates
+
+        face_it.next(None)
+    return uv_face_list
 
 
 if __name__ == '__main__':
