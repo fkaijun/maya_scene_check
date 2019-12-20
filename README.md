@@ -1,5 +1,6 @@
 # maya_scene_check
 当前的检查函数：
+### model check
 - find_triangle_edge: 检查三边面
 - find_many_edge: 检查多边面
 - find_non_manifold_edges： 检查非流形边
@@ -11,4 +12,7 @@
 - find_zero_length_edges: 检查不足长度的边
 - find_unfrozen_vertices: 检查点的世界坐标是否为0.0进而判断点未进行冻结变换
 - has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
+
+### uv check
 - uv_face_cross_quadrant: 检查跨越uv象限的面
+- missing_uv_faces: 检查面的uv时候丢失

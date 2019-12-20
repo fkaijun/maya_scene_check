@@ -18,6 +18,7 @@ maya check functions:
     find_unfrozen_vertices: 检查点的世界坐标是否为0.0进而判断点未进行冻结变换
     has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
     uv_face_cross_quadrant: 检查跨越uv象限的面
+    missing_uv_faces: 检查面的uv时候丢失
 """
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
@@ -364,6 +365,29 @@ def uv_face_cross_quadrant(mesh_name):
 
         face_it.next(None)
     return uv_face_list
+
+
+def missing_uv_faces(mesh_name):
+    """
+    Check face has uv
+    :param str mesh_name: object long name eg.'|group3|pSphere1'
+    :return: face index
+    :rtype: list
+    """
+    miss_uv_face = []
+    mesh_list = om.MSelectionList()
+    mesh_list.add(mesh_name)
+    dag_path = mesh_list.getDagPath(0)
+
+    face_it = om.MItMeshPolygon(dag_path)
+
+    while not face_it.isDone():
+        if face_it.hasUVs() is False:
+            component_name = '{0}.f[{1}]'.format(mesh_name, face_it.index())
+            miss_uv_face.append(component_name)
+        face_it.next(None)
+
+    return miss_uv_face
 
 
 if __name__ == '__main__':
