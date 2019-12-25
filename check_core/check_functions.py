@@ -19,6 +19,8 @@ maya check functions:
     has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
     uv_face_cross_quadrant: 检查跨越uv象限的面
     missing_uv_faces: 检查面的uv时候丢失
+    check_uv_overlapping.main_function: 检查uv重叠面
+    find_double_faces：检查两个面共用所有点
 """
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
@@ -389,6 +391,37 @@ def missing_uv_faces(mesh_name):
 
     return miss_uv_face
 
+
+def find_double_faces(mesh_name):
+    """
+    Check all points common to both faces
+    :param str mesh_name: object long name eg.'|group3|pSphere1'
+    :return: vertex index
+    :rtype: list
+    """
+    mesh_list = om.MSelectionList()
+    mesh_list.add(mesh_name)
+    dag_path = mesh_list.getDagPath(0)
+
+    vertex_it = om.MItMeshVertex(dag_path)
+    vertex_indices = []
+
+    face_id = []
+
+    while not vertex_it.isDone():
+        connect_faces = vertex_it.getConnectedFaces()
+        connect_edges = vertex_it.getConnectedEdges()
+        # print connect_faces, connect_edges
+        if len(connect_faces) == 5 and len(connect_edges) == 4:
+
+            vertex_indices.append(vertex_it.index())
+            if face_id == []:
+                face_id = list(connect_faces)
+            else:
+                face_id = list(set(face_id).intersection(set(list(connect_faces))))
+            print face_id
+        vertex_it.next()
+    cmds.select(['{0}.f[{1}]'.format(mesh_name, a) for a in face_id])
 
 if __name__ == '__main__':
     mesh_name = '|group3|pSphere1'
