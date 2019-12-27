@@ -423,6 +423,7 @@ def find_double_faces(mesh_name):
         vertex_it.next()
     cmds.select(['{0}.f[{1}]'.format(mesh_name, a) for a in face_id])
 
+
 if __name__ == '__main__':
     mesh_name = '|group3|pSphere1'
     print find_unfrozen_vertices(mesh_name)

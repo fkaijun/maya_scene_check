@@ -12,7 +12,9 @@
 - find_zero_length_edges: 检查不足长度的边
 - find_unfrozen_vertices: 检查点的世界坐标是否为0.0进而判断点未进行冻结变换
 - has_vertex_pnts_attr: 检查点的世界坐标是否为0.0，可将值修复为0
+- find_double_faces：检查两个面共用所有点
 
 ### uv check
 - uv_face_cross_quadrant: 检查跨越uv象限的面
 - missing_uv_faces: 检查面的uv时候丢失
+- check_uv_overlapping.main_function: 检查uv重叠面
