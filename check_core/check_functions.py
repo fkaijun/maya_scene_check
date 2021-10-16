@@ -281,9 +281,9 @@ def has_vertex_pnts_attr(mesh_name, fix):
     dag_path.extendToShape()
     dag_node = om.MFnDagNode(dag_path)
     pnts_array = dag_node.findPlug("pnts", True)
-    data_handle = pnts_array.asMdata_handle()
+    data_handle = pnts_array.asMDataHandle()
 
-    arraydata_handle = om.MArraydata_handle(data_handle)
+    arraydata_handle = om.MArrayDataHandle(data_handle)
 
     if not fix:
         while True:
