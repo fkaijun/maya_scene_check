@@ -48,6 +48,9 @@ def plugin_factory(func, **kwargs):
     return ValidationPlugin
 
 
+# we save the new plugin classes in variables so that
+# pyblish.api.register_plugin_path will find the plugin classes in this module
+
 # check functions
 ValidateFindTriangleEdge = plugin_factory(find_triangle_edge)
 ValidateFindManyEdge = plugin_factory(find_many_edge)
@@ -64,7 +67,29 @@ ValidateUvFaceCrossQuadrant = plugin_factory(uv_face_cross_quadrant)
 ValidateMissingUvFaces = plugin_factory(missing_uv_faces)
 ValidateFindDoubleFaces = plugin_factory(find_double_faces)
 
-# ValidateHasVertexPntsAttr.actions = [] # todo implement fix
-
 # check uv overlapping
 ValidateCheckUvOverlapping = plugin_factory(check_uv_overlapping.main_function)
+
+
+class ActionFix(pyblish.api.Action):
+    label = "Fix"
+    on = "failedOrWarning"
+    icon = "hand-o-up"  # Icon from Awesome Icon
+
+    def process(self, context, plugin):
+
+        # because pyblish doesnt support getting instances from a plugin yet
+        # we have to do this manually :(
+        # if only we would get the plugin instances when using an action
+        data = []
+        for result in context.data["results"]:
+            if result["error"] and result["plugin"] == plugin:
+                instance = result["instance"]
+                data.extend(instance)
+
+        func = plugin._func[0]
+        for mesh_name in data:
+            func(mesh_name, fix=True)
+
+
+ValidateHasVertexPntsAttr.actions = [ActionFix]
