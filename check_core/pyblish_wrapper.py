@@ -1,4 +1,4 @@
-import pyblish.api  # todo add compatibility so this lib is still useable when you don't have pyblish installed
+import pyblish.api
 
 from check_core.check_functions import *
 import check_core.check_uv_overlapping as check_uv_overlapping
