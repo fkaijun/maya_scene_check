@@ -20,9 +20,10 @@ class CollectMeshNames(pyblish.api.Collector):
     def process(self, context):
         import maya.cmds as cmds
         mesh_names = cmds.ls(type='mesh', objectsOnly=True, noIntermediate=True, long=True)
-        for mesh_name in mesh_names:
-            instance = context.create_instance(mesh_name, icon="cubes", families=FAMILIES)  # parent=instance_meshes.parent)
-            instance.append(mesh_name)
+        for mesh_name_long in mesh_names:   
+            mesh_name_short = mesh_name_long.rsplit('|', 1)[1]
+            instance = context.create_instance(mesh_name_short, icon="cubes", families=FAMILIES)  # parent=instance_meshes.parent)
+            instance.append(mesh_name_long)
 
 
 def plugin_factory(func, **kwargs):
