@@ -27,10 +27,19 @@ class CollectMeshNames(pyblish.api.Collector):
 
 
 def plugin_factory(func, **kwargs):
-    first_line_doc = func.__doc__.split('\n', 2)[1].strip().capitalize()  # first line is empty so take second line
+    """
+    create a costum class that loads the functions from check_core in pyblish as plugins.
+    :param function func: function we want to wrap in a pyblish plugin
+    :param dict **kwargs: additional keyword arguments we want to pass to the function when run
+    :return custom class type, inherits from pyblish.api.Validator
+    :rtype: Class
+    """
+    # extract label from the function's docstring
+    first_line_doc = func.__doc__.split('\n', 2)[1]  # first line is empty so take second line
+    label_extracted = first_line_doc.lower().replace('check', '').strip().capitalize()
 
     class ValidationPlugin(pyblish.api.Validator):
-        label = first_line_doc
+        label = label_extracted
         hosts = ["maya"]
         families = FAMILIES
         optional = True
@@ -93,4 +102,5 @@ class ActionFix(pyblish.api.Action):
             func(mesh_name, fix=True)
 
 
+# one of the functions supports a fix, implement this as an action
 ValidateHasVertexPntsAttr.actions = [ActionFix]
