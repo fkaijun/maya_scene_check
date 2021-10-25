@@ -62,10 +62,15 @@ def plugin_factory(func, **kwargs):
         def process(self, instance, context):
             mesh_names = instance[:]
             for mesh_name in mesh_names:
-                func = self._func[0]
-                errors = func(mesh_name, **kwargs)
+                try:
+                    func = self._func[0]
+                    errors = func(mesh_name, **kwargs)
+                except Exception as ex:
+                    errors = [mesh_name]
+
                 context.data[self.label] = errors  # save failed results for reuse later
-                assert not errors, 'found:' + str(errors)
+                assert not errors, 'check failed on:' + str(errors)
+
 
     ValidationPlugin.__name__ = 'validate_' + func.__name__
 
