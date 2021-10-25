@@ -324,7 +324,7 @@ def has_vertex_pnts_attr(mesh_name, fix):
     return False
 
 
-def uv_face_cross_quadrant(mesh_name):
+def uv_face_cross_quadrant(mesh_name, accuracy=0.001):
     """
     Check uv face cross quadrant
     :param str mesh_name: object long name eg.'|group3|pSphere1'
@@ -349,7 +349,9 @@ def uv_face_cross_quadrant(mesh_name):
                 for u_coordinate in uv_coordinates:
                     if u_quadrant is None:
                         u_quadrant = int(u_coordinate)
-                    if u_quadrant != int(u_coordinate):
+
+                    u_coordinate_in_quadrant = u_quadrant - accuracy < u_coordinate < u_quadrant + 1 + accuracy
+                    if not u_coordinate_in_quadrant:
                         component_name = '{0}.f[{1}]'.format(mesh_name, face_it.index())
                         if component_name not in uv_face_list:
                             uv_face_list.append(component_name)
@@ -359,7 +361,9 @@ def uv_face_cross_quadrant(mesh_name):
                 for v_coordinate in uv_coordinates:
                     if v_quadrant is None:
                         v_quadrant = int(v_coordinate)
-                    if v_quadrant != int(v_coordinate):
+
+                    v_coordinate_in_quadrant = v_quadrant - accuracy < v_coordinate < v_quadrant + 1 + accuracy
+                    if not v_coordinate_in_quadrant:
                         component_name = '{0}.f[{1}]'.format(mesh_name, face_it.index())
                         if component_name not in uv_face_list:
                             uv_face_list.append(component_name)
