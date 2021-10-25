@@ -111,3 +111,5 @@ ValidateHasVertexPntsAttr.order += .1
 # for now i will remove this pyblish check since it is to dangerous to crash maya
 del ValidateHasVertexPntsAttr
 
+# this check errors out, delete for now
+del ValidateFindCreaseEdges
