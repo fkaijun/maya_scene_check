@@ -104,3 +104,10 @@ class ActionFix(pyblish.api.Action):
 
 # one of the functions supports a fix, implement this as an action
 ValidateHasVertexPntsAttr.actions = [ActionFix]
+
+# TODO fix HACK: if we dont run this check after find_unfrozen_vertices it crashes maya
+# see https://github.com/fkaijun/maya_scene_check/issues/4
+ValidateHasVertexPntsAttr.order += .1
+# for now i will remove this pyblish check since it is to dangerous to crash maya
+del ValidateHasVertexPntsAttr
+
