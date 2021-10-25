@@ -20,10 +20,23 @@ class CollectMeshNames(pyblish.api.Collector):
     def process(self, context):
         import maya.cmds as cmds
         mesh_names = cmds.ls(type='mesh', objectsOnly=True, noIntermediate=True, long=True)
-        for mesh_name_long in mesh_names:   
-            mesh_name_short = mesh_name_long.rsplit('|', 1)[1]
+        for mesh_name_long in mesh_names:
+            # mesh_name_long = mesh_name_long.rsplit('|', 1)[0]  # get long name of parent transform
+            mesh_name_short = mesh_name_long.rsplit('|', 1)[1]  # get short name of the node
             instance = context.create_instance(mesh_name_short, icon="cubes", families=FAMILIES)  # parent=instance_meshes.parent)
             instance.append(mesh_name_long)
+
+
+class ActionSelect(pyblish.api.Action):
+    label = "Select failed"
+    on = "failedOrWarning"
+    icon = "hand-o-up"  # Icon from Awesome Icon
+
+    def process(self, context, plugin):
+        import maya.cmds as cmds
+        errors = context.data[plugin.label]  # list of strings, ex. ['pCube2.f[0]',...]
+        print(errors)
+        cmds.select(errors)
 
 
 def plugin_factory(func, **kwargs):
@@ -43,6 +56,7 @@ def plugin_factory(func, **kwargs):
         hosts = ["maya"]
         families = FAMILIES
         optional = True
+        actions = [ActionSelect]
         _func = [func]  # we can't store func directly or it will pass self when running self.func()
 
         def process(self, instance, context):
@@ -50,7 +64,7 @@ def plugin_factory(func, **kwargs):
             for mesh_name in mesh_names:
                 func = self._func[0]
                 errors = func(mesh_name, **kwargs)
-                # context.data[self.label] = errors  # save failed results for reuse later
+                context.data[self.label] = errors  # save failed results for reuse later
                 assert not errors, 'found:' + str(errors)
 
     ValidationPlugin.__name__ = 'validate_' + func.__name__
@@ -103,7 +117,7 @@ class ActionFix(pyblish.api.Action):
 
 
 # one of the functions supports a fix, implement this as an action
-ValidateHasVertexPntsAttr.actions = [ActionFix]
+ValidateHasVertexPntsAttr.actions.append(ActionFix)
 
 # TODO fix HACK: if we dont run this check after find_unfrozen_vertices it crashes maya
 # see https://github.com/fkaijun/maya_scene_check/issues/4
