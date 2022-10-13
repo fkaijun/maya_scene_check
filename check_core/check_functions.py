@@ -189,7 +189,7 @@ def find_mesh_border_edges(mesh_name):
 
 def find_crease_edges(mesh_name):
     """
-    Check mesh border edges
+    Check mesh crease edges
     :param str mesh_name: object long name eg.'|group3|pSphere1'
     :return: edge index
     :rtype: list
@@ -212,7 +212,7 @@ def find_crease_edges(mesh_name):
 
 def find_zero_length_edges(mesh_name, min_edge_length):
     """
-    Check mesh border edges
+    Check mesh zero length edges
     :param str mesh_name: object long name eg.'|group3|pSphere1'
     :param float min_edge_length: min edge length
     :return: edge index
